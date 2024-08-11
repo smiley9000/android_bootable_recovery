@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 <recovery>
+	<resources>
+		<image name="help_png" filename="help_png" retainaspect="1"/>
+		<image name="faq" filename="faq" retainaspect="1"/>
+	</resources>
 	<styles>
 		<style name="text_l">
 			<font resource="font_l" color="%text_color%"/>
@@ -174,6 +178,83 @@
 	</styles>
 
 	<pages>
+		<page name="addons">
+			<template name="page"/>
+
+			<text style="text_l">
+				<placement x="%col1_x_header%" y="%row3_header_y%"/>
+				<text>Essentials</text>
+			</text>
+
+			<text style="text_m">
+				<condition var1="tw_no_cpu_temp" var2="0"/>
+				<placement x="%col1_x_header%" y="%row4_header_y%"/>
+				<text>Common Things</text>
+			</text>
+
+			<button style="main_button_half_height">
+				<placement x="36" y="324"/>
+				<text>Decrypt</text>
+				<actions>
+					<action function="set">tw_back=addons</action>
+					<action function="set">addon=1</action>
+					<action function="set">tw_filename=/addon/dec.zip</action>
+					<action function="set">tw_action=queuezip</action>
+					<action function="set">tw_has_action2=1</action>
+					<action function="set">tw_action2=flash</action>
+					<action function="set">tw_action2_param=flash_zip</action>
+					<action function="set">tw_text1=You Must need RW Vendor</action>
+					<action function="set">tw_text2=This will disable encryption</action>
+					<action function="set">tw_text3=You CAN backup/restore data form TWRP</action>
+					<action function="set">tw_text4=You CAN use internal storage form TWRP</action>
+					<action function="set">tw_text5=You MUST Fomact data and metadata before Reboot</action>
+					<action function="set">tw_slider_text=Format data and metadata</action>
+					<action function="page">confirm_action</action>
+				</actions>
+			</button>
+			
+			<button style="main_button_half_height">
+				<placement x="557" y="324"/>
+				<text>Encrypt</text>
+				<actions>
+					<action function="set">tw_back=addons</action>
+					<action function="set">tw_filename=/addon/enc.zip</action>
+					<action function="set">tw_action=queuezip</action>
+					<action function="set">tw_has_action2=1</action>
+					<action function="set">tw_action2=flash</action>
+					<action function="set">tw_action2_param=flash_zip</action>
+					<action function="set">tw_text1=This will enable Encrpytion</action>
+					<action function="set">tw_text2=You CANNOT use internal storage form TWRP</action>
+					<action function="set">tw_text3=You CANNOT backup/restore data form TWRP</action>
+					<action function="set">tw_text4=You MUST Fomact data before Reboot</action>
+					<action function="set">tw_text5=You MUST Fomact data and metadata before Reboot</action>
+					<action function="set">tw_slider_text=Format data and metadata</action>
+					<action function="page">confirm_action</action>
+				</actions>
+			</button>			
+						
+
+			<action>
+				<touch key="home"/>
+				<action function="page">main2</action>
+			</action>
+
+			<action>
+				<touch key="back"/>
+				<action function="page">advanced</action>
+			</action>
+
+			<action>
+				<touch key="power"/>
+				<action function="togglebacklight"/>
+			</action>
+
+			<action>
+				<touch key="power+voldown" />
+				<action function="screenshot" />
+			</action>
+
+		</page>
 		<page name="main">
 			<action>
 				<actions>
@@ -196,6 +277,16 @@
 				<placement x="%col1_x_header%" y="%row4_header_y%"/>
 				<text>%tw_version%</text>
 			</text>
+
+			<button style="button_quarter_width">
+				<placement x="830" y="%row3_header_y%"/>
+				<text>README</text>
+				<actions>
+					<action function="queueclear"/>
+					<action function="set">tw_selectimage=0</action>
+					<action function="page">faq</action>
+				</actions>
+			</button>
 
 			<button style="main_button">
 				<placement x="%indent%" y="%row2a_y%"/>
@@ -249,6 +340,8 @@
 				<action function="page">reboot</action>
 			</button>
 		</page>
+		
+		
 
 		<page name="install">
 			<template name="page"/>
@@ -3861,12 +3954,22 @@
 				<text>{@file_manager_btn=File Manager}</text>
 				<action function="page">filemanagerlist</action>
 			</button>
-
+			<button style="main_button">
+				<placement x="%indent%" y="%row8_y%"/>
+				<text>Terminal</text>
+				<action function="page">terminalcommand</action>
+			</button>
 			<listbox style="advanced_listbox">
 				<placement x="%indent%" y="%row13a_y%" w="%content_width%" h="%listbox_advanced_height%"/>
 				<listitem name="{@change_twrp_folder_btn=Change TWRP folder}">
 					<condition var1="tw_is_decrypted" var2="1"/>
 					<action function="page">changeTwrpFolder</action>
+				</listitem>
+				<listitem name="Enable/Disable Encryption">
+					<actions>
+						<action function="set">tw_back=advanced</action>
+						<action function="page">dfe</action>
+					</actions>
 				</listitem>
 				<listitem name="{@decrypt_users=Decrypt Users}">
 					<conditions>
@@ -3959,26 +4062,6 @@
 						<action function="page">confirm_action</action>
 					</actions>
 				</listitem>
-				<listitem name="{@reboot_install_app_hdr=Install TWRP App}">
-					<condition var1="tw_app_install_status" var2="1"/>
-					<actions>
-						<action function="set">tw_back=advanced</action>
-						<action function="set">tw_appinstall_title={@advanced_hdr=Advanced}</action>
-						<action function="page">installapp</action>
-					</actions>
-				</listitem>
-				<listitem name="{@uninstall_twrp_system_app=Uninstall TWRP App from System}">
-					<condition var1="tw_app_installed_in_system" var2="1"/>
-					<actions>
-						<action function="set">tw_back=advanced</action>
-						<action function="set">tw_action=uninstalltwrpsystemapp</action>
-						<action function="set">tw_text1={@uninstall_twrp_system_app_confirm=Uninstall TWRP App from System?}</action>
-						<action function="set">tw_action_text1={@uninstalling_twrp_system_app=Uninstalling TWRP App from System...}</action>
-						<action function="set">tw_complete_text1={@uninstall_twrp_system_app_complete=Uninstall TWRP App from System Complete}</action>
-						<action function="set">tw_slider_text={@swipe_to_confirm=Swipe to Confirm}</action>
-						<action function="page">confirm_action</action>
-					</actions>
-				</listitem>
 				<listitem name="{@unmap_super_devices=Unmap Super Devices}">
 					<condition var1="tw_is_super" op="=" var2="1"/>
 					<actions>
@@ -4004,6 +4087,88 @@
 					</actions>
 				</listitem>
 			</listbox>
+
+			<action>
+				<touch key="home"/>
+				<action function="page">main</action>
+			</action>
+
+			<action>
+				<touch key="back"/>
+				<action function="page">main</action>
+			</action>
+		</page>
+
+		<page name="dfe">
+			<template name="page"/>
+
+			<text style="text_l">
+				<placement x="%col1_x_header%" y="%row3_header_y%"/>
+				<text>Enable/Disable Encryption</text>
+			</text>
+			
+			<image>
+				<image resource="help_png"/>
+				<placement x="540" y="600" placement="4"/>
+			</image>
+
+			<listbox style="advanced_listbox">
+				<placement x="%indent%" y="%row13a_y%" w="%content_width%" h="%listbox_advanced_height%"/>
+				<listitem name="Format Data">
+					<actions>
+						<action function="page">formatdata</action>
+					</actions>
+				</listitem>
+				<listitem name="Enable/Disable Encryption Both EROFS/EXT4">
+					<actions>
+						<action function="set">tw_back=dfe</action>
+						<action function="set">addon=1</action>
+						<action function="set">tw_filename=/addon/dfe.zip</action>
+						<action function="set">tw_action=queuezip</action>
+						<action function="set">tw_has_action2=1</action>
+						<action function="set">tw_action2=flash</action>
+						<action function="set">tw_action2_param=flash_zip</action>
+						<action function="set">tw_text1=You have to do this again </action>
+						<action function="set">tw_text2=after flashing/upgrading to a new rom</action>
+						<action function="set">tw_text3=Becuase this will patch</action>
+						<action function="set">tw_text4=vendor_boot image and super</action>
+						<action function="set">tw_slider_text=Continue</action>
+						<action function="page">confirm_action</action>
+					</actions>
+				</listitem>
+			</listbox>
+
+			<action>
+				<touch key="home"/>
+				<action function="page">main</action>
+			</action>
+
+			<action>
+				<touch key="back"/>
+				<action function="page">dfe</action>
+			</action>
+		</page>
+		
+		<page name="faq">
+			<template name="page"/>
+
+			<text style="text_l">
+				<placement x="%col1_x_header%" y="%row3_header_y%"/>
+				<text>Please READ</text>
+			</text>
+			
+			<image>
+				<image resource="faq"/>
+				<placement x="540" y="600" placement="4"/>
+			</image>
+			
+			<button style="main_button_half_height">
+				<placement x="%center_x%" y="%row18a_y%"/>
+				<text>Back</text>
+				<actions>
+					<action function="page">main</action>
+				</actions>
+			</button>
 
 			<action>
 				<touch key="home"/>
